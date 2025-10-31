@@ -1,0 +1,14 @@
+# Changes here will be overwritten by Copier
+_commit: v0.2.0
+_src_path: gh:alan-turing-institute/python-project-template
+coc: our_coc
+email: zacharybunch1284@gmail.com
+full_name: Zachary Bunch
+license: MIT
+min_python_version: '3.10'
+org: ZacharyBunch01
+project_name: asl-project
+project_short_description: ASL package
+python_name: asl_project
+typing: no_typing
+url: https://github.com/ZacharyBunch01/asl-project
