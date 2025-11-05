@@ -56,12 +56,34 @@ iconicityTrial  = read_csv(dataPath / "Iconicity/IconicityTrial.csv")
 neigborPairs    = read_csv(dataPath / "Phonology/NeigborPairs.csv")
 ''' 
 
+'''
+	---------------------------
+	- Preprocessing Functions -
+	---------------------------
+'''
+
+# Test availability of extensions for attributes
+# Variables are either stored under ".2.0" or "M6.2.0"
+def attemptRowGet(prefix):
+	correctPath = ""
+
+	if (correctPath := row.get(prefix + ".2.0")) is not None:
+		# print(f"Opening {prefix}.2.0")
+		return correctPath
+	elif (correctPath := row.get(prefix + "M6.2.0")) is not None:
+		# print(f"Opening {prefix}M6.2.0")
+		return correctPath
+	
+	print(f"{prefix} not available")
+	return None
+
 
 '''
 	---------------------
 	- Define Sign Class -
 	---------------------
 '''
+
 
 # Class for storing parsed sign data
 # Data : Movement, Location, Handshape
@@ -77,11 +99,11 @@ class Sign:
 
 	# Define sign properties
 	@property
-	def movement(self):  return self.attrs.get("Movement.2.0")
+	def movement(self):  return self.attrs.get(attemptRowGet("Movement"))
 	@property
-	def location(self):  return self.attrs.get("Location.2.0")
+	def location(self):  return self.attrs.get(attemptRowGet("Location"))
 	@property
-	def handshape(self): return self.attrs.get("Handshape.2.0")
+	def handshape(self): return self.attrs.get(attemptRowGet("Handshape"))
 
 
 '''	
@@ -100,12 +122,13 @@ indexedSignData = signData.set_index('LemmaID')
 # Initiate object containing all signs in dataset
 signs = {}
 
+
 # Append signs into our signs object
 for name, row in indexedSignData.iterrows():
 	signs[name] = {
-		"Movement":  row.get("Movement.2.0"),
-		"Location":  row.get("Location.2.0"),
-		"Handshape": row.get("Handshape.2.0"),
+		"Movement":  attemptRowGet("Movement"),
+		"Location":  attemptRowGet("Location"),
+		"Handshape": attemptRowGet("Handshape"),
 		**row.to_dict()
 	}	
 
@@ -121,5 +144,6 @@ print(f"Movement: {tree.movement}")
 print(f"Location: {tree.location}")
 print(f"Handshape: {tree.handshape}")
 
-# print(sorted(signData.columns.tolist()))
+# Print all sign variables
+print(sorted(signData.columns.tolist()))
 
