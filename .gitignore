@@ -10,6 +10,9 @@ __pycache__/
 # Figures
 ./src/Figures
 
+# Models
+./src/models
+
 # C extensions
 *.so
 
