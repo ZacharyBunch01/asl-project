@@ -10,6 +10,7 @@ PURPOSE : Parse the dataset, then pass for visualization
 import pandas as pd
 import numpy as np
 import os
+import re
 
 from pathlib import Path
 from dataclasses import dataclass
@@ -63,19 +64,22 @@ neigborPairs    = read_csv(dataPath / "Phonology/NeigborPairs.csv")
 '''
 
 # Test availability of extensions for attributes
-# Variables are either stored under ".2.0" or "M6.2.0"
-def attemptRowGet(prefix):
-	correctPath = ""
+# Variables are either stored under ".2.0", "M2.2.0", "M3.2.0", ...
+def attemptRowGet(row: pd.Series, prefix: str):
 
-	if (correctPath := row.get(prefix + ".2.0")) is not None:
-		# print(f"Opening {prefix}.2.0")
-		return correctPath
-	elif (correctPath := row.get(prefix + "M6.2.0")) is not None:
-		# print(f"Opening {prefix}M6.2.0")
-		return correctPath
+	# Init correctValue
+	correctValue = ""
+
+	# Account for varying stems for each attribute
+	correctPathCandidates = [f"{prefix}.2.0"] + [f"{prefix}M{i}.2.0" for i in range(2, 7)]
+
+	# Check if attribute is assigned value according to stem
+	for candidate in correctPathCandidates:	
+		if (correctValue := row.get(candidate)) is not None:
+			return correctValue
 	
-	print(f"{prefix} not available")
-	return None
+	print(f"{prefix} attribute does not exist")
+	return None 
 
 
 '''
@@ -84,9 +88,8 @@ def attemptRowGet(prefix):
 	---------------------
 '''
 
-
 # Class for storing parsed sign data
-# Data : Movement, Location, Handshape
+# Data : Movement, Major Location, Minor Location, Handshape
 class Sign:
 	# Constructor
 	def __init__(self, name, attrs):
@@ -99,11 +102,17 @@ class Sign:
 
 	# Define sign properties
 	@property
-	def movement(self):  return self.attrs.get(attemptRowGet("Movement"))
+	def movement(self):  
+		return self.attrs.get("Movement")
 	@property
-	def location(self):  return self.attrs.get(attemptRowGet("Location"))
+	def majorLocation(self):  
+		return self.attrs.get("MajorLocation")
 	@property
-	def handshape(self): return self.attrs.get(attemptRowGet("Handshape"))
+	def minorLocation(self):
+		return self.attrs.get("MinorLocation")
+	@property
+	def handshape(self): 
+		return self.attrs.get("Handshape")
 
 
 '''	
@@ -122,13 +131,13 @@ indexedSignData = signData.set_index('LemmaID')
 # Initiate object containing all signs in dataset
 signs = {}
 
-
 # Append signs into our signs object
 for name, row in indexedSignData.iterrows():
 	signs[name] = {
-		"Movement":  attemptRowGet("Movement"),
-		"Location":  attemptRowGet("Location"),
-		"Handshape": attemptRowGet("Handshape"),
+		"Movement":        attemptRowGet(row, "Movement"),
+		"MajorLocation":   attemptRowGet(row, "MajorLocation"),
+		"MinorLocation":   attemptRowGet(row, "MinorLocation"),
+		"Handshape":       attemptRowGet(row, "Handshape"),
 		**row.to_dict()
 	}	
 
@@ -139,11 +148,12 @@ for name, row in indexedSignData.iterrows():
 '''
 
 # Test word parsing
-tree = Sign("tree", signs["tree"])
+tree = Sign("hellow", signs["hello"])
 print(f"Movement: {tree.movement}")
-print(f"Location: {tree.location}")
+print(f"Major Location: {tree.majorLocation}")
+print(f"Minor Location: {tree.minorLocation}")
 print(f"Handshape: {tree.handshape}")
 
 # Print all sign variables
-print(sorted(signData.columns.tolist()))
+# print(sorted(signData.columns.tolist()))
 
