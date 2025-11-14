@@ -23,7 +23,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 # default targets to train
-DEFAULT_TARGETS = ["Handshape.2.0", "Movement.2.0", "Location.2.0"]
+DEFAULT_TARGETS = ["Handshape", "Movement", "MajorLocation"]
 
 # columns that are ID-ish or huge text that we don't want to one-hot encode
 ID_LIKE_COLS = ["LemmaID", "SignBankEnglishTranslations", "SignBankLemmaID", "EntryID", "Item"]
@@ -52,15 +52,10 @@ def train_one_target(
     """
     original_target = target_col
 
-    # Handle the “maybe it's called something else” case
     if target_col not in signData.columns:
-        if target_col == "Location.2.0" and "MajorLocation.2.0" in signData.columns:
-            print("[WARN] Location.2.0 not found, using MajorLocation.2.0 instead.")
-            target_col = "MajorLocation.2.0"
-        else:
-            msg = f"Target {target_col} not found in data, skipping."
-            print(f"[SKIP] {msg}")
-            return {"target": original_target, "status": "skip", "reason": msg}
+        msg = f"Target {target_col} not found in data, skipping."
+        print(f"[SKIP] {msg}")
+        return {"target": original_target, "status": "skip", "reason": msg}
 
     print("\n==============================")
     print(f"[INFO] Training for target: {target_col}")
