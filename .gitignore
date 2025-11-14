@@ -12,6 +12,7 @@ __pycache__/
 
 # Models
 ./src/models
+src/models/*.pkl
 
 # C extensions
 *.so
