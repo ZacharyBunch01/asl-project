@@ -23,7 +23,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 # default targets to train
-DEFAULT_TARGETS = ["Handshape", "Movement", "MajorLocation"]
+DEFAULT_TARGETS = ["Handshape", "Movement", "MajorLocation", "MinorLocation"]
 
 # columns that are ID-ish or huge text that we don't want to one-hot encode
 ID_LIKE_COLS = ["LemmaID", "SignBankEnglishTranslations", "SignBankLemmaID", "EntryID", "Item"]
