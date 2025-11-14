@@ -29,13 +29,9 @@ def null_one_target(signData: pd.DataFrame, target_col: str) -> Dict:
 
     # --- same target handling as training.py ---
     if target_col not in signData.columns:
-        if target_col == "Location.2.0" and "MajorLocation.2.0" in signData.columns:
-            print("[WARN] Location.2.0 not found, using MajorLocation.2.0 instead.")
-            target_col = "MajorLocation.2.0"
-        else:
-            msg = f"Target {target_col} not found in data, skipping."
-            print(f"[SKIP] {msg}")
-            return {"target": original_target, "status": "skip", "reason": msg}
+        msg = f"Target {target_col} not found in data, skipping."
+        print(f"[SKIP] {msg}")
+        return {"target": original_target, "status": "skip", "reason": msg}
 
     print("\n==============================")
     print(f"[INFO] NULL baselines for target: {target_col}")
