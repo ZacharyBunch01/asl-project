@@ -67,6 +67,7 @@ def test_attemptRowGet_returns_none_if_missing(capfd):
     out, _ = capfd.readouterr()
     assert "Movement attribute does not exist" in out
 
+
 '''
 	----------------------------
 	- Verify Parsing Functions -
