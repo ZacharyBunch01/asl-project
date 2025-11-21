@@ -2,23 +2,25 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-from .utils import save_plot
+from .export import save_plot
 
-def plot_missing_values(
-    df: pd.DataFrame,
-    top_n: int = 15,
-    folder: str = "../Figures",
-) -> None:
-    """Plot the top-N columns by proportion of missing values."""
+def plot_missing_values(df, top_n=15, folder="../Figures"):
+    # Plot the top-N columns by proportion of missing values.
+    if df is None or df.empty:
+        print("[missing] DataFrame is empty, skipping missing-value plot")
+        return
+    
     missing = df.isnull().mean().sort_values(ascending=False)
 
-    if missing.empty:
+    if missing.empty or missing.max() == 0:
         print("[missing] No missing values to plot.")
         return
 
     missing_top = missing.head(top_n)
 
+    height = max(5, 0.35 * len(missing_top))
     fig, ax = plt.subplots(figsize=(10, 5))
+    
     sns.barplot(
         x=missing_top,
         y=missing_top.index,
