@@ -52,6 +52,11 @@ log_cli_level = "INFO"
 testpaths = [
   "tests",
 ]
+pythonpath = [
+  "src",
+]
+
+
 
 [tool.coverage]
 run.source = ["asl_project"]
