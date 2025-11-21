@@ -1,121 +1,103 @@
 """
-training.py
+trainer.py
 
-Train ML models on ASL data, one target at a time.
+High-level training orchestration for ASL models.
 """
 
-import warnings
 from pathlib import Path
-from typing import List, Dict
-
-import joblib
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, f1_score
+import warnings
+from sklearn.utils.class_weight import compute_class_weight
+import numpy as np
+
+from ml_scripts.config import DEFAULT_TARGETS, DEFAULT_MODELS_DIR
+from ml_scripts.data_checker import validate_target_column
+from ml_scripts.model_pipeline import (
+    build_pipeline,
+    train_test_split_data,
+    fit_model,
+    evaluate_model,
+    save_model,
+)
+
+# Hide certain warnings so the output is easier to read.
+warnings.filterwarnings("ignore", message="Skipping features without any observed values*",)
 
 
-from ml_scripts.processor import build_preprocessor
-
-# hide unnecessary warnings 
-warnings.filterwarnings("ignore", category=UserWarning)
-warnings.filterwarnings("ignore", category=RuntimeWarning)
-
-# default targets to train
-DEFAULT_TARGETS = ["Handshape", "Movement", "MajorLocation", "MinorLocation"]
-
-# columns that are ID-ish or huge text that we don't want to one-hot encode
-ID_LIKE_COLS = ["LemmaID", "SignBankEnglishTranslations", "SignBankLemmaID", "EntryID", "Item"]
-
-def train_one_target(
-    signData: pd.DataFrame,
-    target_col: str,
-    models_dir: Path,
-) -> Dict:
+def train_one_target(signData, target_col, models_dir):
     """
     Train a model for a single target column.
+    
 
-    Parameters
-    ----------
-    signData : pd.DataFrame
-        Full ASL sign dataset.
-    target_col : str
-        Name of the column to predict.
-    models_dir : Path
-        Directory where the trained model will be saved.
-
-    Returns
-    -------
-    dict
-        Dictionary with status, metrics, and model path.
     """
-    original_target = target_col
+    # make sure that there is a model dir
+    if isinstance(models_dir, str):
+        models_dir = Path(models_dir)
 
-    if target_col not in signData.columns:
-        msg = f"Target {target_col} not found in data, skipping."
+    # make sure that the targets we are training are actually in the Dataset
+    valid, msg = validate_target_column(signData, target_col)
+    if not valid:
         print(f"[SKIP] {msg}")
-        return {"target": original_target, "status": "skip", "reason": msg}
+        return {"target": target_col, "status": "skip", "reason": msg}
 
     print("\n==============================")
     print(f"[INFO] Training for target: {target_col}")
     print("==============================")
 
-    # Drop rows with no label / no data for this target
+    # Remove rows that have no label for this target to ensure we are only training on the target we want
     data_trained = signData.dropna(subset=[target_col]).copy()
+    # if the target we are training on is empty skip ove it
     if data_trained.empty:
         msg = f"No data for {target_col}"
         print(f"[SKIP] {msg}")
         return {"target": target_col, "status": "skip", "reason": msg}
 
+    # y the data the model tries to learn
+    # X is all other info that helps predict y
     y = data_trained[target_col]
     X = data_trained.drop(columns=[target_col])
 
-    # Drop ID / big text columns (if present)
-    for col in ID_LIKE_COLS:
-        if col in X.columns:
-            X = X.drop(columns=[col])
+    #Compute class weights using sklearn
+    #
+    classes = np.unique(y)
+    class_weights = compute_class_weight(
+        class_weight="balanced",
+        classes=classes,
+        y=y
+        )
+    class_weight_dict = {cls: w for cls, w in zip(classes, class_weights)}
 
-    # Build pipeline
-    preprocessor = build_preprocessor(X)
 
-    # Handle tiny classes (stratify only if all classes have >= 2 samples)
-    min_class_size = y.value_counts().min()
-    stratify_arg = y if min_class_size >= 2 else None
-    if stratify_arg is None:
-        print(f"[WARN] Not stratifying {target_col} because at least one class has <2 samples")
+    print("[WEIGHTS] Using class weights:")
+    # Commented out to reduce noise, but can be turned on if needed shows how the data has been weighted for each target
+    """
+    for k, v in class_weight_dict.items():
+        print(f"   {k}: {v:.2f}")
+    """
+
 
     # Train/test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42,
-        stratify=stratify_arg,
-    )
+    # split data: Trains on 80% of the data and 20% will be used for testing
+    # train set: data the model learns from
+    # test set: data used to check how well the model learned
+    X_train, X_test, y_train, y_test = train_test_split_data(X, y)
 
-    # Model
-    model = RandomForestClassifier(n_estimators=300, random_state=42)
-    pipe = Pipeline(steps=[
-        ("prep", preprocessor),
-        ("model", model),
-    ])
-
+    # Build and fit pipeline with weights included
+    pipe = build_pipeline(X, class_weight=class_weight_dict)
     print(f"[INFO] Fitting model for {target_col} on {len(X_train)} rows...")
-    pipe.fit(X_train, y_train)
+    pipe = fit_model(pipe, X_train, y_train)
     print("[INFO] Done fitting.")
 
     # Evaluate
-    y_pred = pipe.predict(X_test)
-    acc = accuracy_score(y_test, y_pred)
-    f1m = f1_score(y_test, y_pred, average="macro")
-
+    metrics = evaluate_model(pipe, X_test, y_test)
+    # accuracy: how many predictions are correct
+    acc = metrics["accuracy"]
+    # F1_score: how well the model handles all classes fairly
+    f1m = metrics["f1_macro"]
     print(f"[INFO] {target_col:20s} | acc: {acc:.3f} | f1: {f1m:.3f}")
 
-    # Save model
-    models_dir.mkdir(exist_ok=True)
-    model_path = models_dir / f"model_{target_col.replace('.', '_')}.pkl"
-    joblib.dump(pipe, model_path)
+    # Save model to a file
+    model_path = save_model(pipe, models_dir, target_col)
 
     return {
         "target": target_col,
@@ -126,38 +108,36 @@ def train_one_target(
     }
 
 
-def train_all_targets(
-    signData: pd.DataFrame,
-    targets: List[str] | None = None,
-    models_dir: Path | None = None,
-) -> List[Dict]:
+def train_all_targets(signData, targets=None, models_dir=None):
     """
     Train models for a list of target columns on the given dataset.
 
-    Parameters
-    ----------
-    signData : pd.DataFrame
-        Full ASL sign dataset.
-    targets : list[str] or None
-        Target columns to train on. If None, uses DEFAULT_TARGETS.
-    models_dir : Path or None
-        Where to save models. Defaults to 'models/'.
-
-    Returns
-    -------
-    list[dict]
-        One dict of results per target.
+    Steps:
+    - Use default targets if none are given
+    - Make sure the models folder exists
+    - Train each target one-by-one
+    - Collect results and return them
     """
+
+    # Use default folder if none is provided
     if models_dir is None:
-        models_dir = Path("models")
+        models_dir = DEFAULT_MODELS_DIR
+    elif isinstance(models_dir, str):
+        models_dir = Path(models_dir)
+
+    # Make folder if missing
     models_dir.mkdir(exist_ok=True)
 
+     # Use default target list if none given
     if targets is None:
         targets = DEFAULT_TARGETS
 
-    results: List[Dict] = []
+    results = []
+    # Train each target one at a time
     for target_col in targets:
         res = train_one_target(signData, target_col, models_dir)
         results.append(res)
 
     return results
+
+
