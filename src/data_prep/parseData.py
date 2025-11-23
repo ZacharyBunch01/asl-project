@@ -19,7 +19,7 @@ from dataclasses import dataclass
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data_prep.prepareData import signData, attemptRowGet
-from utils.classes import Sign
+from sign_helpers.sign import Sign
 
 '''	
 	---------------------
@@ -73,7 +73,7 @@ def buildSigns(sign_df):
 
 # Only run the demo when executing as a script
 if __name__ == "__main__":
-    signs = build_signs(signData)
+    signs = buildSigns(signData)
 
     tree = Sign("hello", signs["hello"])
     print(f"Movement: {tree.movement}")
