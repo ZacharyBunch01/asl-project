@@ -190,3 +190,7 @@ InCDI,2723,2,No,2187,,,,,,,
 CDISemanticCategory,568,21,Action Signs,128,,,,,,,
 bglm_aoa,533.0,,,,34.75609756097561,8.67763228280484,14.0,28.0,33.0,40.0,67.0
 empirical_aoa,533.0,,,,25.5046904315197,7.261656208526353,9.0,19.0,28.0,28.0,60.0
+Movement,2306,7,Straight,1245,,,,,,,
+MajorLocation,2723,6,Neutral,988,,,,,,,
+MinorLocation,2723,37,Neutral,989,,,,,,,
+Handshape,2723,58,1,274,,,,,,,
