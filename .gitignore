@@ -8,11 +8,13 @@ __pycache__/
 ./Data
 
 # Figures
-./src/Figures
+./src/Figures/
 src/Figures/*
+Figures/
+Figures/*
 
 # Models
-./src/models
+./src/models/
 src/models/*.pkl
 
 # C extensions
