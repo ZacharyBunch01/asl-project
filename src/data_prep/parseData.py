@@ -73,7 +73,7 @@ def buildSigns(sign_df):
 
 # Only run the demo when executing as a script
 if __name__ == "__main__":
-    signs = build_signs(signData)
+    signs = buildSigns(signData)
 
     tree = Sign("hello", signs["hello"])
     print(f"Movement: {tree.movement}")
