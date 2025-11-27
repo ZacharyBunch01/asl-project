@@ -9,6 +9,7 @@ __pycache__/
 
 # Figures
 ./src/Figures
+src/Figures/*
 
 # Models
 ./src/models
