@@ -6,7 +6,7 @@ runs the ml models to on the parsed data
 
 import sys
 from pathlib import Path
-from utils.sign_data import get_sign_data
+from sign_data import get_sign_data
 from ml_scripts.training import train_all_targets
 
 

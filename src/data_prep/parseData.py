@@ -19,7 +19,7 @@ from dataclasses import dataclass
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data_prep.prepareData import signData, attemptRowGet
-from utils.classes import Sign
+from sign_data.classes import Sign
 
 '''	
 	---------------------
