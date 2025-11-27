@@ -2,7 +2,7 @@
 Entry point for running visualizations on parsed sign data.
 """
 
-from utils.sign_data import get_sign_data
+from sign_data import get_sign_data
 from visualization.config import configure_plots
 from visualization import (
     plot_categorical_distributions,

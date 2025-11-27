@@ -4,7 +4,7 @@ null_runner.py
 Run null (baseline) models on the ASL dataset and print a summary.
 """
 
-from utils.sign_data import get_sign_data
+from sign_data import get_sign_data
 from ml_scripts.null import null_all_targets
 
 
