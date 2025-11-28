@@ -16,6 +16,7 @@ Figures/*
 # Models
 ./src/models/
 src/models/*.pkl
+src/ml_scripts/visualmodel/video_classifier.pt
 
 # C extensions
 *.so
