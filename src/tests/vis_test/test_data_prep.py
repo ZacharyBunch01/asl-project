@@ -12,7 +12,7 @@ from pathlib import Path
 from data_prep.prepareData import read_csv, attemptRowGet
 from data_prep.parseData import buildSigns
 from data_prep import prepareData
-from utils.classes import Sign
+from sign_data.classes import Sign
 
 
 '''
