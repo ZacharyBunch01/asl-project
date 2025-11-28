@@ -58,7 +58,7 @@ def train_one_target(signData, target_col, models_dir):
     X = data_trained.drop(columns=[target_col])
 
     #Compute class weights using sklearn
-    #
+    
     classes = np.unique(y)
     class_weights = compute_class_weight(
         class_weight="balanced",
