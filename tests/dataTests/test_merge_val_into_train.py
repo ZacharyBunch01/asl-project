@@ -6,13 +6,7 @@ import pytest
 from data_prep.placeValDataInTrain import merge_val_into_train
 
 def test_merge(tmp_path: Path):
-    """
-    End-to-end test;
-    Create fake train/ and val/ directories
-    Add Class folders and files to val/
-    Run merge_val_into_train
-    Assert files moved and val is cleaned up
-    """
+    # Create root directory structure
     root = tmp_path
 
     # Create train/ and val/
@@ -21,7 +15,7 @@ def test_merge(tmp_path: Path):
     train_dir.mkdir()
     val_dir.mkdir()
 
-    # Create matching class directories in both
+    # Create matching class directories inside train/ and val/
     train_bath = train_dir / "bathroom"
     train_bed = train_dir / "bed"
     train_bath.mkdir()
@@ -32,56 +26,54 @@ def test_merge(tmp_path: Path):
     val_bath.mkdir()
     val_bed.mkdir()
 
-    # Add files into val classes
+    # Put fake image files into the validation directories
     (val_bath / "bath1.jpg").write_text("x")
     (val_bath / "bath2.jpg").write_text("x")
     (val_bed / "bed1.jpg").write_text("x")
 
-    # Run merge
+    # Run the merge logic
     merge_val_into_train(root)
 
-    # Files should now exist in train dirs
+    # Verify validation images were moved into the correct train folders
     assert (train_bath / "bath1.jpg").exists()
     assert (train_bath / "bath2.jpg").exists()
     assert (train_bed / "bed1.jpg").exists()
 
-    # val class dirs should be removed
+    # After merge, val/* class directories should be deleted
     assert not val_bath.exists()
     assert not val_bed.exists()
 
-    # val root dir should also be removed
+    # And val/ itself should be removed entirely
     assert not val_dir.exists()
 
 def test_no_val_directory_prints_message(tmp_path: Path, capsys):
-    """
-    If val/ does not exist, function should print a message and return.
-    """
+    # Create only train/, no val/ directory
     root = tmp_path
     (root / "train").mkdir()
 
+    # Run function — expected: print message and exit early
     merge_val_into_train(root)
 
+    # Capture printed output
     captured = capsys.readouterr()
     assert "No val directory found" in captured.out
 
 def test_missing_train_directory_raises(tmp_path: Path):
-    """
-    Train dir must exist or a FileNotFoundError is raised.
-    """
+    # Create val/ but NOT train/
     root = tmp_path
     (root / "val").mkdir()
 
+    # Expected: raises FileNotFoundError
     with pytest.raises(FileNotFoundError):
         merge_val_into_train(root)
 
 def test_val_has_no_class_dirs(tmp_path: Path, capsys):
-    """
-    If val/ exists but has no subdirectories, it should print a message and return.
-    """
+    # Create train/ and empty val/ directory
     root = tmp_path
     (root / "train").mkdir()
     (root / "val").mkdir()
 
+    # Run function — expected: prints message about missing class folders
     merge_val_into_train(root)
     captured = capsys.readouterr()
 

@@ -2,8 +2,12 @@
 Entry point for running visualizations on parsed sign data.
 """
 
-from sign_data import get_sign_data
+from utils.sign_data import get_sign_data
+
+# Apply global plot styling (Seaborn + Matplotlib)
 from visualization.config import configure_plots
+
+# Visualization functions collected in __init__.py
 from visualization import (
     plot_categorical_distributions,
     plot_handshape_movement_heatmap,
@@ -13,16 +17,17 @@ from visualization import (
 )
 
 def main():
-    # Apply global plot styling
+    # Initialize global plotting settings (only runs once)
     configure_plots()
 
-    # Load processed + canonicalized sign data
+    # Load processed DataFrame with canonical ASL features
     signData = get_sign_data()
     if signData is None or signData.empty:
         raise RuntimeError("Sign data not available or empty")
 
     print(f"[runner] Data loaded: {signData.shape[0]} rows x {signData.shape[1]} columns.")
 
+    # All outputs will be saved into ../Figures
     output_folder = "../Figures"
 
     # Run visualization steps
