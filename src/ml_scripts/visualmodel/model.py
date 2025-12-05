@@ -1,8 +1,16 @@
-# model.py
+'''
+	model.py
+	
+	Inits the trained model.
+'''
+
 import torch
 import torch.nn as nn
 from torchvision.models.video import r3d_18, R3D_18_Weights
 
+'''
+	Inits the model 
+'''
 def build_model(num_classes, pretrained=True):
     if pretrained:
         weights = R3D_18_Weights.DEFAULT

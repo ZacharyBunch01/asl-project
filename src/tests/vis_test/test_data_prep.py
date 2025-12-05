@@ -76,7 +76,7 @@ def test_data_files_exist():
     # parents[1] = src
     # parents[2] = project root (my-package-name)
     project_root = Path(__file__).resolve().parents[2]
-    data_dir = project_root / "Data"
+    data_dir = project_root / ".." / "Data"
 
     assert (data_dir / "signdata.csv").exists()
     assert (data_dir / "signdataKEY.csv").exists()

@@ -35,12 +35,15 @@ def read_csv(path):
 	-----------------
 '''
 
-# Path to dataset folder
-dataPath        = Path("../Data")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = PROJECT_ROOT / "Data"
+
+SIGNDATA_PATH = DATA_DIR / "signdata.csv"
+SIGNDATA_KEY_PATH = DATA_DIR / "signdataKEY.csv"
 
 # Sign handshape and movement data
-signData        = read_csv(dataPath / "signdata.csv")
-signDataKey     = read_csv(dataPath / "signdataKEY.csv")
+signData        = read_csv(SIGNDATA_PATH)
+signDataKey     = read_csv(SIGNDATA_KEY_PATH)
 
 
 '''

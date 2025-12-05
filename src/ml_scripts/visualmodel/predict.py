@@ -2,8 +2,8 @@ import torch
 from pathlib import Path
 from torchvision.io import read_video
 
-from model import build_model
-from transforms import get_video_transform
+from .model import build_model
+from .transforms import get_video_transform
 
 device = torch.device(
     "cuda" if torch.cuda.is_available()
