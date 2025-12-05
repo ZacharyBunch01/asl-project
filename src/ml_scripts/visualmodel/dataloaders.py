@@ -1,7 +1,12 @@
-# dataloaders.py
+'''
+	DataLoaders.py
+
+	Splits the dataset into train and test folders.
+'''
+
 from torch.utils.data import DataLoader
-from dataset import VideoDataset
-from transforms import get_video_transform
+from .dataset import VideoDataset
+from .transforms import get_video_transform
 
 def get_dataloaders(root="../../../Data/Visual_split/", batch_size=4, num_frames=16):
     train_dir = f"{root}/train"

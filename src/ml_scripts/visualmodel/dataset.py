@@ -1,3 +1,9 @@
+'''
+Dataset.py
+
+Defines the VideoDataset class
+'''
+
 import os
 import random
 from pathlib import Path
@@ -7,6 +13,12 @@ from torch.utils.data import Dataset
 import torchvision.transforms as T
 from torchvision.io import read_video
 
+'''
+	VideoDataset Class
+
+	Importing into this class automatically takes the first 16 frames,
+        sorts, each frame, and normalizs color data.
+'''
 class VideoDataset(Dataset):
     def __init__(self, root_dir, num_frames=16, transform=None):
         """

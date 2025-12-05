@@ -4,8 +4,9 @@ import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 
-from dataloaders import get_dataloaders
-from model import build_model
+
+from .dataloaders import get_dataloaders
+from .model import build_model
 
 device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 

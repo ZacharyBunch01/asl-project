@@ -3,7 +3,6 @@ import builtins
 import visualization
 import visualize_sign_data
 
-
 def test_runner_calls_all_steps(monkeypatch):
     # Fake DataFrame to be returned by get_sign_data
     fake_df = pd.DataFrame({

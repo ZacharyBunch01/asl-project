@@ -2,7 +2,7 @@
 Entry point for running visualizations on parsed sign data.
 """
 
-from utils.sign_data import get_sign_data
+from sign_helpers.sign_data import get_sign_data
 
 # Apply global plot styling (Seaborn + Matplotlib)
 from visualization.config import configure_plots
