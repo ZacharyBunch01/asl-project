@@ -1,0 +1,132 @@
+ASL Dataset Visualization Module
+
+This folder contains a modular, extensible set of visualization tools for exploring the ASL sign dataset.
+Each component is separated into focused files to keep the code clean, testable, and easy to maintain.
+
+The visualizations generated here help analyze the distribution, completeness, and structure of the ASL dataset used for downstream machine-learning tasks.
+
+All generated figures are saved automatically into the ../Figures/ directory (ignored by Git).
+
+Folder Overview
+visualization/
+│
+├── __init__.py
+├── config.py
+├── categorical.py
+├── heatmaps.py
+├── missing.py
+├── summary.py
+└── export.py
+
+What Each File Does
+config.py - Global Plot Configuration
+
+Sets the default style for all plots using Matplotlib + Seaborn.
+Runs once per session to ensure consistent visualization aesthetics:
+
+DPI settings
+
+Font sizes
+
+Grid visibility
+
+Background colors
+
+categorical.py - Categorical Feature Distributions
+
+Generates count plots for categorical variables such as:
+
+Movement
+
+MajorLocation
+
+MinorLocation
+
+Handshape
+
+Figures dynamically scale in height based on the number of categories, and labels are cleaned for readability.
+
+heatmaps.py - Heatmap Visualizations
+
+This module contains two main heatmaps:
+
+Handshape - Movement Frequency Heatmap
+Shows co-occurrence patterns between phonological features.
+
+Numeric Feature Correlation Heatmap
+Computes correlations among numeric columns and visualizes them using Seaborn.
+
+missing.py - Missing Data Visualization
+
+Plots the top N columns with the highest proportion of missing values.
+Useful for spotting incomplete attributes in the dataset before preprocessing or modeling.
+
+summary.py - Summary Statistics Export
+
+Produces and saves a CSV with summary statistics for all columns in the dataset.
+Includes:
+
+Count
+
+Mean / Std (numeric features)
+
+Unique categories
+
+Most frequent value
+
+This file is helpful for documenting dataset shape and variable characteristics.
+
+export.py - Output Directory & File Saving Utilities
+
+Handles:
+
+Creating the Figures/ output directory
+
+Saving Matplotlib figures with consistent formatting
+
+This keeps file I/O separate from visualization logic.
+
+Running All Visualizations
+
+The recommended entry point is the script:
+
+src/visualize_sign_data.py
+
+You can run it from inside the src/ directory:
+
+python visualize_sign_data.py
+
+This script:
+
+Loads the parsed sign dataset
+
+Applies global styling
+
+Runs all visualization modules
+
+Saves all figures into ../Figures/
+
+Exports a summary CSV
+
+Output
+
+All figures and summary files are saved to:
+
+../Figures/
+
+
+(Automatically created if missing and excluded from Git by .gitignore.)
+
+Extending the Visualization System
+
+To add a new visualization:
+
+Create a new file (e.g., time_series.py)
+
+Implement the plotting logic
+
+Add imports + calls inside visualize_sign_data.py
+
+Use export.save_plot() for consistent saving
+
+This modular architecture allows new graphs to be added cleanly without modifying existing modules.
