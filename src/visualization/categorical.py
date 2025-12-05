@@ -14,20 +14,25 @@ def plot_categorical_distributions(df, features=None, top_n=None, folder="../Fig
         features = ["Movement", "MajorLocation", "MinorLocation", "Handshape"]
 
     for feature in features:
-        # check if the feature exists before processing
+        # Skip features missing from the dataset
         if feature not in df.columns:
             print(f"Skipping '{feature}': not in DataFrame.")
             continue
 
-        # Data prep
+        # Compute category frequencies
         value_counts = df[feature].value_counts(dropna=False)
+
+        # Limit categories if top_n specified
         if top_n is not None:
             value_counts = value_counts.head(top_n)
 
         category_order =value_counts.index
         num_categories = len(category_order)
         
-        #Plot config
+        # -----------------------------
+        # Dynamic Figure Height
+        # -----------------------------
+        # Ensures small sets aren't tiny and large sets aren't overwhelming.
         BASE_HEIGHT = 6
         HEIGHT_PER_CATEGORY = 0.35
         MAX_HEIGHT = 20

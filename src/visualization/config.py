@@ -1,40 +1,33 @@
-"""
-config.py
 
-Global plotting configuration.
-Use this module to define visual defaults for all analysis plots
-using matplotlib and seaborn.
-"""
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Optional
 
-# Private flag to make sure config only runs once
+# Flag to ensure plot configuration is only applied once per session
 config_applied = False
 
-"""
-Sets up the global style for all plots
-
-style: The seaborn theme to apply
-dpi: The dots-per-inch resolution
-"""
 def configure_plots(style: str = "whitegrid", dpi: int = 150) -> None:
     global config_applied
 
-    # Don't re run if it's already done
+    # Prevent re-applying the configuration if it’s already been set
     if config_applied:
         return
+    
+    # Apply global matplotlib settings for consistent plot appearance
     plt.rcParams.update({
-        "figure.dpi": dpi,
-        "savefig.dpi": dpi,
-        "axes.titlesize": 14,
-        "axes.labelsize": 12,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
-        "axes.grid": True,
-        "grid.alpha": 0.4,
-        "figure.facecolor": "white"
+        "figure.dpi": dpi, # resolution for interactive figures
+        "savefig.dpi": dpi, # resolution for saved images
+        "axes.titlesize": 14, # title text size
+        "axes.labelsize": 12, # axis label size
+        "xtick.labelsize": 10, # x-axis tick label size
+        "ytick.labelsize": 10, # y-axis tick label size
+        "axes.grid": True, # enable gridlines
+        "grid.alpha": 0.4, # grid transparency
+        "figure.facecolor": "white" # background color of figures
     })
+    # Apply seaborn styling theme
+    sns.set_theme(style=style)
 
+    # Mark configuration as done
     config_applied = True
     print(f"Plot styling initialized! (Theme: '{style})")

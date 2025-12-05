@@ -1,0 +1,124 @@
+Test Suite Overview
+
+This directory contains all unit tests for the ASL project.
+The tests are organized into logical subfolders based on the part of the system they validate:
+tests/
+├── __init__.py
+├── dataTests/
+│   └── test_merge_val_into_train.py
+├── ml_test/
+│   ├── __init__.py
+│   └── test_ml_pipeline.py
+└── vis_test/
+    ├── test_categorical.py
+    ├── test_config.py
+    ├── test_data_prep.py
+    ├── test_export.py
+    ├── test_heatmaps.py
+    ├── test_missing.py
+    ├── test_summary.py
+    └── test_visualize_sign_data.py
+
+Folder Breakdown
+dataTests/ — Data Preparation & File Handling
+
+Tests in this folder validate:
+
+Reading CSV files
+
+Extracting/cleaning row values
+
+Building Sign objects
+
+Ensuring dataset files exist
+
+Verifying that value-to-training merges work correctly
+(e.g., moving files from val/ into train/ directories)
+
+Example coverage:
+
+Missing files
+
+Fallback column logic
+
+End-to-end directory and file movement
+
+ml_test/ — Machine Learning Training & Baselines
+
+Contains tests for the machine learning pipeline, including:
+
+End-to-end model training
+
+Ensuring a model file is written to disk
+
+Verifying that class weights are applied
+
+Making sure the null baseline produces valid metrics
+
+Monkeypatching preprocessors to isolate model behavior
+
+These tests ensure the ML components behave predictably even on small, synthetic datasets.
+
+vis_test/ — Visualization & Plot Generation
+
+Tests visualization modules without requiring actual graphics rendering.
+
+These tests use monkeypatching to intercept save_plot calls so no images are saved.
+
+Covers:
+
+Categorical plots
+
+Heatmaps (handshape × movement & numeric correlations)
+
+Missing-value bar plots
+
+Summary statistics export
+
+Global plot configuration
+
+Full runner script (visualize_sign_data.main())
+
+Checks include:
+
+Skipping plots when data is missing
+
+Ensuring exactly one plot is generated under correct conditions
+
+Correct filename usage
+
+Proper folder creation
+
+Running the Test Suite
+
+From the project root:
+
+pytest -q
+
+
+To run tests for a single area, for example visualization:
+
+pytest tests/vis_test -q
+
+
+Or a specific file:
+
+pytest tests/vis_test/test_heatmaps.py -q
+
+Notes on the Testing Approach
+
+Monkeypatching is heavily used to avoid generating real figures or writing real files.
+
+Temporary directories (tmp_path) isolate filesystem tests.
+
+Fixtures provide small synthetic datasets for reproducibility.
+
+Tests are designed to be:
+
+Fast
+
+Deterministic
+
+Independent
+
+Focused on behavior rather than implementation details
